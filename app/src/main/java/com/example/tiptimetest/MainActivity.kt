@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -16,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -48,12 +50,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 
 fun TipTimeScreen() {
-    val focusManager = LocalFocusManager.current
+
     var amountInput by remember { mutableStateOf("0") }
     var tipInput by remember { mutableStateOf("0") }
     val tipPercent = tipInput.toDoubleOrNull() ?: 0.0
     val amount = amountInput.toDoubleOrNull() ?: 0.0
     val tip = calculateTip(amount, tipPercent)
+    val focusManager = LocalFocusManager.current
     Column(modifier = Modifier.padding(32.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
 
         Text(
@@ -72,7 +75,8 @@ fun TipTimeScreen() {
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next
 
-            )
+            ),
+            keyboardActions = KeyboardActions (onNext = {focusManager.moveFocus(FocusDirection.Down)})
 
         )
 
@@ -82,7 +86,9 @@ fun TipTimeScreen() {
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done
-            )
+            ),
+            keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()})
+
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
@@ -100,27 +106,20 @@ fun EditNumberField(
     value: String,
     onValueChange: (String) -> Unit,
     keyboardOptions: KeyboardOptions,
+    keyboardActions: KeyboardActions,
     modifier: Modifier = Modifier
 ) {
-
     TextField(
         value = value,
-        onValueChange = onValueChange,
-
-        label = {
-            Text(
-                text = stringResource(id = label),
-                modifier = Modifier.fillMaxWidth()
-            )
-        },
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number,
-            imeAction = ImeAction.Next
-        ),
         singleLine = true,
+        modifier = modifier.fillMaxWidth(),
+        onValueChange = onValueChange,
+        label = { Text(stringResource(label)) },
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions
     )
-
 }
+
 
 
 private fun calculateTip(amount: Double, tipPercent: Double = 15.0): String {
