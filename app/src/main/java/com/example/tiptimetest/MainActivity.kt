@@ -134,7 +134,7 @@ fun RoundTipRow(roundUp:Boolean,onRoundUpChange:(Boolean) -> Unit,modifier: Modi
 Text(text = stringResource(id = R.string.round_up_tip))
         Switch(checked = roundUp, onCheckedChange = onRoundUpChange, modifier = Modifier
             .fillMaxWidth().wrapContentWidth(Alignment.End),
-        colors = SwitchDefaults.colors(uncheckedThumbColor = Color.DarkGray)
+        colors = SwitchDefaults.colors(uncheckedThumbColor = Color.Black)
         )
         
 
