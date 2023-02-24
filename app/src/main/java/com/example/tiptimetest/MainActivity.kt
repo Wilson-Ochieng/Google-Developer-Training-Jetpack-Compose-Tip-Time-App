@@ -1,5 +1,6 @@
 package com.example.tiptimetest
 
+import android.graphics.Paint
 import android.os.Bundle
 import android.widget.NumberPicker.OnValueChangeListener
 import androidx.activity.ComponentActivity
@@ -8,10 +9,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +52,9 @@ fun TipTimeScreen() {
     var amountInput by remember { mutableStateOf("0") }
     var tipInput by remember { mutableStateOf("0") }
     val tipPercent = tipInput.toDoubleOrNull() ?: 0.0
+
+    var roundUp by remember { mutableStateOf(false) }
+
     val amount = amountInput.toDoubleOrNull() ?: 0.0
     val tip = calculateTip(amount, tipPercent)
     val focusManager = LocalFocusManager.current
@@ -90,6 +91,7 @@ fun TipTimeScreen() {
             keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()})
 
         )
+        RoundTipRow(roundUp = roundUp, onRoundUpChange = {roundUp = it } )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
             text = stringResource(id = R.string.tip_amount, tip),
@@ -120,6 +122,22 @@ fun EditNumberField(
     )
 }
 
+
+@Composable
+
+fun RoundTipRow(roundUp:Boolean,onRoundUpChange:(Boolean) -> Unit,modifier: Modifier =Modifier){
+
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .size(48.dp), verticalAlignment = Alignment.CenterVertically){
+Text(text = stringResource(id = R.string.round_up_tip))
+        Switch(checked = roundUp, onCheckedChange = onRoundUpChange, modifier = Modifier
+            .fillMaxWidth().wrapContentWidth(Alignment.End) )
+        
+
+
+    }
+}
 
 
 private fun calculateTip(amount: Double, tipPercent: Double = 15.0): String {
